@@ -98,7 +98,7 @@ static void mete_infantes(void)
 {
     int status;
     while (waitpid(-1, &status, WNOHANG) > 0)
-        ;
+        (void)0;
     infans_mutatus = 0;
 }
 
@@ -113,7 +113,8 @@ static void mete_infantes(void)
 static char *expande_variabiles(const char *fons)
 {
     static char alveus[LIM_LINEA];
-    int i = 0, o = 0;
+    int i   = 0;
+    int o   = 0;
     int lon = (int)strlen(fons);
 
     while (i < lon && o < LIM_LINEA - 1) {
@@ -128,7 +129,8 @@ static char *expande_variabiles(const char *fons)
             i++;
             while (i < lon && fons[i] != '\'' && o < LIM_LINEA - 1)
                 alveus[o++] = fons[i++];
-            if (i < lon) i++; /* praetermitte ' */
+            if (i < lon)
+                i++; /* praetermitte ' */
             continue;
         }
         if (fons[i] != '$') {
@@ -174,7 +176,10 @@ static char *expande_variabiles(const char *fons)
         int n = 0;
         while (i < lon && n < 255) {
             if (cum_bracchiis) {
-                if (fons[i] == '}') { i++; break; }
+                if (fons[i] == '}') {
+                    i++;
+                    break;
+                }
             } else {
                 if (!isalnum((unsigned char)fons[i]) && fons[i] != '_')
                     break;
@@ -201,8 +206,8 @@ static char *expande_variabiles(const char *fons)
  */
 static int disseca_signa(const char *linea, char **signa, int lim)
 {
-    int n = 0;
-    int i = 0;
+    int n   = 0;
+    int i   = 0;
     int lon = (int)strlen(linea);
 
     while (i < lon && n < lim) {
@@ -242,10 +247,14 @@ static int disseca_signa(const char *linea, char **signa, int lim)
             char c = linea[i];
 
             /* spatium vel operator terminat signum */
-            if (!( c == '\'' || c == '"' || c == '\\') &&
-                (isspace((unsigned char)c) ||
-                 c == '|' || c == ';' || c == '&' ||
-                 c == '>' || c == '<' || c == '#'))
+            if (
+                !( c == '\'' || c == '"' || c == '\\') &&
+                (
+                    isspace((unsigned char)c) ||
+                    c == '|' || c == ';' || c == '&' ||
+                    c == '>' || c == '<' || c == '#'
+                )
+            )
                 break;
 
             if (c == '\\' && i + 1 < lon) {
@@ -258,7 +267,8 @@ static int disseca_signa(const char *linea, char **signa, int lim)
                 i++;
                 while (i < lon && linea[i] != '\'')
                     alveus[o++] = linea[i++];
-                if (i < lon) i++;
+                if (i < lon)
+                    i++;
                 continue;
             }
 
@@ -272,7 +282,8 @@ static int disseca_signa(const char *linea, char **signa, int lim)
                         alveus[o++] = linea[i++];
                     }
                 }
-                if (i < lon) i++;
+                if (i < lon)
+                    i++;
                 continue;
             }
 
@@ -297,14 +308,16 @@ static int disseca_lineam(const char *linea_cruda, linea_dissecta_t *ld)
 
     /* expande variabiles primum */
     char *expansa = expande_variabiles(linea_cruda);
-    if (!expansa) return -1;
+    if (!expansa)
+        return -1;
 
     /* disseca in signa */
     char *signa[LIM_SIGNA];
     int num_signa = disseca_signa(expansa, signa, LIM_SIGNA);
     free(expansa);
 
-    if (num_signa == 0) return 0;
+    if (num_signa == 0)
+        return 0;
 
     int m = 0;  /* index mandati currentis */
     ld->num_mandata = 1;
@@ -341,7 +354,7 @@ static int disseca_lineam(const char *linea_cruda, linea_dissecta_t *ld)
             free(s);
             if (i + 1 < num_signa) {
                 ld->mandata[m].ex_red.genus = 1;
-                ld->mandata[m].ex_red.via = signa[++i];
+                ld->mandata[m].ex_red.via   = signa[++i];
             }
             continue;
         }
@@ -350,7 +363,7 @@ static int disseca_lineam(const char *linea_cruda, linea_dissecta_t *ld)
             free(s);
             if (i + 1 < num_signa) {
                 ld->mandata[m].ex_red.genus = 2;
-                ld->mandata[m].ex_red.via = signa[++i];
+                ld->mandata[m].ex_red.via   = signa[++i];
             }
             continue;
         }
@@ -359,7 +372,7 @@ static int disseca_lineam(const char *linea_cruda, linea_dissecta_t *ld)
             free(s);
             if (i + 1 < num_signa) {
                 ld->mandata[m].in_red.genus = 3;
-                ld->mandata[m].in_red.via = signa[++i];
+                ld->mandata[m].in_red.via   = signa[++i];
             }
             continue;
         }
@@ -389,8 +402,10 @@ static void libera_lineam(linea_dissecta_t *ld)
         mandatum_t *m = &ld->mandata[i];
         for (int j = 0; j < m->num_argumenta; j++)
             free(m->argumenta[j]);
-        if (m->in_red.via) free(m->in_red.via);
-        if (m->ex_red.via) free(m->ex_red.via);
+        if (m->in_red.via)
+            free(m->in_red.via);
+        if (m->ex_red.via)
+            free(m->ex_red.via);
     }
 }
 
@@ -404,14 +419,17 @@ static void libera_lineam(linea_dissecta_t *ld)
  */
 static char *expande_tildem(const char *via)
 {
-    if (via[0] != '~') return NULL;
+    if (via[0] != '~')
+        return NULL;
 
     const char *domus = getenv("HOME");
     if (!domus) {
         struct passwd *pw = getpwuid(getuid());
-        if (pw) domus = pw->pw_dir;
+        if (pw)
+            domus = pw->pw_dir;
     }
-    if (!domus) return NULL;
+    if (!domus)
+        return NULL;
 
     if (via[1] == '\0')
         return strdup(domus);
@@ -432,7 +450,8 @@ static char *expande_tildem(const char *via)
 /* reddit 1 si mandatum internum tractatum est, 0 aliter */
 static int exsequere_internum(mandatum_t *m)
 {
-    if (m->num_argumenta == 0) return 1;
+    if (m->num_argumenta == 0)
+        return 1;
 
     const char *nomen = m->argumenta[0];
 
@@ -448,14 +467,15 @@ static int exsequere_internum(mandatum_t *m)
     /* cd */
     if (strcmp(nomen, "cd") == 0) {
         const char *dest = NULL;
-        char *expandata = NULL;
+        char *expandata  = NULL;
 
         if (m->num_argumenta < 2) {
             dest = getenv("HOME");
-            if (!dest) dest = "/";
+            if (!dest)
+                dest = "/";
         } else {
             expandata = expande_tildem(m->argumenta[1]);
-            dest = expandata ? expandata : m->argumenta[1];
+            dest      = expandata ? expandata : m->argumenta[1];
         }
 
         if (chdir(dest) != 0) {
@@ -472,7 +492,7 @@ static int exsequere_internum(mandatum_t *m)
     if (strcmp(nomen, "export") == 0) {
         for (int i = 1; i < m->num_argumenta; i++) {
             char *par = m->argumenta[i];
-            char *eq = strchr(par, '=');
+            char *eq  = strchr(par, '=');
             if (eq) {
                 *eq = '\0';
                 setenv(par, eq + 1, 1);
@@ -496,7 +516,8 @@ static int exsequere_internum(mandatum_t *m)
     /* echo */
     if (strcmp(nomen, "echo") == 0) {
         for (int i = 1; i < m->num_argumenta; i++) {
-            if (i > 1) putchar(' ');
+            if (i > 1)
+                putchar(' ');
             fputs(m->argumenta[i], stdout);
         }
         putchar('\n');
@@ -563,7 +584,8 @@ static void applica_redirectiones(mandatum_t *m)
  */
 static void exsequere_lineam(linea_dissecta_t *ld)
 {
-    if (ld->num_mandata == 0) return;
+    if (ld->num_mandata == 0)
+        return;
 
     /* mandatum simplex sine tubulis — proba internum */
     if (ld->num_mandata == 1 && !ld->in_fundo) {
@@ -588,8 +610,10 @@ static void exsequere_lineam(linea_dissecta_t *ld)
             signal(SIGINT, SIG_DFL);
             applica_redirectiones(m);
             execvp(m->argumenta[0], m->argumenta);
-            fprintf(stderr, "festum: %s: %s\n",
-                    m->argumenta[0], strerror(errno));
+            fprintf(
+                stderr, "festum: %s: %s\n",
+                m->argumenta[0], strerror(errno)
+            );
             _exit(127);
         }
 
@@ -654,8 +678,10 @@ static void exsequere_lineam(linea_dissecta_t *ld)
 
             applica_redirectiones(m);
             execvp(m->argumenta[0], m->argumenta);
-            fprintf(stderr, "festum: %s: %s\n",
-                    m->argumenta[0], strerror(errno));
+            fprintf(
+                stderr, "festum: %s: %s\n",
+                m->argumenta[0], strerror(errno)
+            );
             _exit(127);
         }
     }
@@ -740,7 +766,8 @@ static int num_historia;
 
 static void adde_historiam(const char *linea)
 {
-    if (!linea[0]) return;
+    if (!linea[0])
+        return;
     /* ne duplices ultimam */
     if (num_historia > 0 && strcmp(historia[num_historia - 1], linea) == 0)
         return;
@@ -779,8 +806,10 @@ static int est_positio_mandati(const char *linea, int init_verbi)
     int i = init_verbi - 1;
     while (i >= 0 && linea[i] == ' ')
         i--;
-    if (i < 0) return 1;
-    if (linea[i] == '|' || linea[i] == ';') return 1;
+    if (i < 0)
+        return 1;
+    if (linea[i] == '|' || linea[i] == ';')
+        return 1;
     return 0;
 }
 
@@ -788,9 +817,10 @@ static int est_positio_mandati(const char *linea, int init_verbi)
  * comple_plicas — complet nomina plicarum.
  * reddit numerum completionum inventarum.
  */
-static int comple_plicas(const char *praefixum, int lon,
-                          char **completiones, int lim)
-{
+static int comple_plicas(
+    const char *praefixum, int lon,
+    char **completiones, int lim
+) {
     int n = 0;
     char directorium[LIM_VIA] = ".";
     const char *basis = praefixum;
@@ -810,16 +840,18 @@ static int comple_plicas(const char *praefixum, int lon,
         if (lon_dir == 0) {
             strcpy(directorium, "/");
         } else {
-            if (lon_dir >= LIM_VIA) lon_dir = LIM_VIA - 1;
+            if (lon_dir >= LIM_VIA)
+                lon_dir = LIM_VIA - 1;
             memcpy(directorium, praefixum, lon_dir);
             directorium[lon_dir] = '\0';
         }
-        basis = ult_sep + 1;
+        basis     = ult_sep + 1;
         lon_basis = lon - lon_dir - 1;
     }
 
     DIR *d = opendir(directorium);
-    if (!d) return 0;
+    if (!d)
+        return 0;
 
     struct dirent *ent;
     while ((ent = readdir(d)) != NULL && n < lim) {
@@ -832,8 +864,10 @@ static int comple_plicas(const char *praefixum, int lon,
         struct stat st;
 
         if (ult_sep) {
-            snprintf(via_plena, sizeof(via_plena), "%s/%s",
-                     directorium, ent->d_name);
+            snprintf(
+                via_plena, sizeof(via_plena), "%s/%s",
+                directorium, ent->d_name
+            );
         } else {
             snprintf(via_plena, sizeof(via_plena), "%s", ent->d_name);
         }
@@ -841,19 +875,23 @@ static int comple_plicas(const char *praefixum, int lon,
         /* adde '/' si directorium */
         char nomen[LIM_VIA];
         if (ult_sep) {
-            snprintf(nomen, sizeof(nomen), "%.*s/%s",
-                     (int)(ult_sep - praefixum), praefixum, ent->d_name);
+            snprintf(
+                nomen, sizeof(nomen), "%.*s/%s",
+                (int)(ult_sep - praefixum), praefixum, ent->d_name
+            );
         } else {
             snprintf(nomen, sizeof(nomen), "%s", ent->d_name);
         }
 
         char stat_via[LIM_VIA];
-        snprintf(stat_via, sizeof(stat_via), "%s/%s",
-                 directorium, ent->d_name);
+        snprintf(
+            stat_via, sizeof(stat_via), "%s/%s",
+            directorium, ent->d_name
+        );
         if (stat(stat_via, &st) == 0 && S_ISDIR(st.st_mode)) {
             size_t l = strlen(nomen);
             if (l + 1 < LIM_VIA) {
-                nomen[l] = '/';
+                nomen[l]     = '/';
                 nomen[l + 1] = '\0';
             }
         }
@@ -868,25 +906,28 @@ static int comple_plicas(const char *praefixum, int lon,
  * comple_mandata — complet nomina mandatorum in PATH.
  * reddit numerum completionum.
  */
-static int comple_mandata(const char *praefixum, int lon,
-                           char **completiones, int lim)
-{
+static int comple_mandata(
+    const char *praefixum, int lon,
+    char **completiones, int lim
+) {
     int n = 0;
     const char *via_env = getenv("PATH");
-    if (!via_env) return 0;
+    if (!via_env)
+        return 0;
 
     char via_copia[LIM_LINEA];
     strncpy(via_copia, via_env, sizeof(via_copia) - 1);
     via_copia[sizeof(via_copia) - 1] = '\0';
 
     char *salvatum = NULL;
-    char *dir = strtok_r(via_copia, ":", &salvatum);
+    char *dir      = strtok_r(via_copia, ":", &salvatum);
     while (dir && n < lim) {
         DIR *d = opendir(dir);
         if (d) {
             struct dirent *ent;
             while ((ent = readdir(d)) != NULL && n < lim) {
-                if (ent->d_name[0] == '.') continue;
+                if (ent->d_name[0] == '.')
+                    continue;
                 if (strncmp(ent->d_name, praefixum, lon) != 0)
                     continue;
 
@@ -933,13 +974,15 @@ static int comple_mandata(const char *praefixum, int lon,
  */
 static int praefixum_commune(char **completiones, int n, int lon_praef)
 {
-    if (n <= 0) return 0;
+    if (n <= 0)
+        return 0;
     int lon_prim = (int)strlen(completiones[0]);
     int communis = lon_prim;
 
     for (int i = 1; i < n; i++) {
         int lon_i = (int)strlen(completiones[i]);
-        if (lon_i < communis) communis = lon_i;
+        if (lon_i < communis)
+            communis = lon_i;
         for (int j = lon_praef; j < communis; j++) {
             if (completiones[0][j] != completiones[i][j]) {
                 communis = j;
@@ -997,9 +1040,10 @@ static void term_scribe_s(const char *s)
 /*
  * repinge_lineam — repingit lineam ab initio post incitamentum.
  */
-static void repinge_lineam(const char *linea, int lon, int cursor,
-                            int lon_incit)
-{
+static void repinge_lineam(
+    const char *linea, int lon, int cursor,
+    int lon_incit
+) {
     char alveus[64];
     /* move ad initium lineae */
     term_scribe_s("\r");
@@ -1039,7 +1083,8 @@ static char *lege_lineam_interactivam(void)
         if (r <= 0) {
             /* EOF */
             restitue_terminum();
-            if (lon == 0) return NULL;
+            if (lon == 0)
+                return NULL;
             linea[lon] = '\0';
             return linea;
         }
@@ -1058,8 +1103,8 @@ static char *lege_lineam_interactivam(void)
             term_scribe_s("^C\n");
             restitue_terminum();
             scribe_incitamentum();
-            lon = 0;
-            cursor = 0;
+            lon      = 0;
+            cursor   = 0;
             linea[0] = '\0';
             idx_hist = num_historia;
             pone_modum_crudum();
@@ -1089,39 +1134,47 @@ static char *lege_lineam_interactivam(void)
         /* Tab — completio */
         if (c == '\t') {
             int lon_verbi;
-            int init_verbi = extrahe_verbum(linea, cursor, &lon_verbi);
+            int init_verbi  = extrahe_verbum(linea, cursor, &lon_verbi);
             char *praefixum = linea + init_verbi;
 
             char *completiones[LIM_COMPLETIONES];
             int num_compl;
 
             if (est_positio_mandati(linea, init_verbi))
-                num_compl = comple_mandata(praefixum, lon_verbi,
-                                            completiones, LIM_COMPLETIONES);
+                num_compl = comple_mandata(
+                    praefixum, lon_verbi,
+                    completiones, LIM_COMPLETIONES
+                );
             else
-                num_compl = comple_plicas(praefixum, lon_verbi,
-                                           completiones, LIM_COMPLETIONES);
+                num_compl = comple_plicas(
+                    praefixum, lon_verbi,
+                    completiones, LIM_COMPLETIONES
+                );
 
             /* adde semper plicas etiam in positione mandati */
             if (est_positio_mandati(linea, init_verbi)) {
-                int n2 = comple_plicas(praefixum, lon_verbi,
-                                        completiones + num_compl,
-                                        LIM_COMPLETIONES - num_compl);
+                int n2 = comple_plicas(
+                    praefixum, lon_verbi,
+                    completiones + num_compl,
+                    LIM_COMPLETIONES - num_compl
+                );
                 num_compl += n2;
             }
 
             if (num_compl == 1) {
                 /* completio unica — insere residuum */
                 const char *compl = completiones[0];
-                int lon_compl = (int)strlen(compl);
-                int addendum = lon_compl - lon_verbi;
+                int lon_compl     = (int)strlen(compl);
+                int addendum      = lon_compl - lon_verbi;
 
                 if (addendum > 0 && lon + addendum < LIM_LINEA) {
                     /* spatium post si non directorium */
                     int cum_spatio = (compl[lon_compl - 1] != '/') ? 1 : 0;
-                    memmove(linea + cursor + addendum + cum_spatio,
-                            linea + cursor,
-                            lon - cursor);
+                    memmove(
+                        linea + cursor + addendum + cum_spatio,
+                        linea + cursor,
+                        lon - cursor
+                    );
                     memcpy(linea + cursor, compl + lon_verbi, addendum);
                     if (cum_spatio)
                         linea[cursor + addendum] = ' ';
@@ -1132,13 +1185,19 @@ static char *lege_lineam_interactivam(void)
                 }
             } else if (num_compl > 1) {
                 /* praefixum commune */
-                int addendum = praefixum_commune(completiones, num_compl,
-                                                  lon_verbi);
+                int addendum = praefixum_commune(
+                    completiones, num_compl,
+                    lon_verbi
+                );
                 if (addendum > 0 && lon + addendum < LIM_LINEA) {
-                    memmove(linea + cursor + addendum,
-                            linea + cursor, lon - cursor);
-                    memcpy(linea + cursor,
-                           completiones[0] + lon_verbi, addendum);
+                    memmove(
+                        linea + cursor + addendum,
+                        linea + cursor, lon - cursor
+                    );
+                    memcpy(
+                        linea + cursor,
+                        completiones[0] + lon_verbi, addendum
+                    );
                     lon += addendum;
                     cursor += addendum;
                     linea[lon] = '\0';
@@ -1176,7 +1235,7 @@ static char *lege_lineam_interactivam(void)
 
         /* Ctrl-K — dele ad finem */
         if (c == 11) {
-            lon = cursor;
+            lon        = cursor;
             linea[lon] = '\0';
             repinge_lineam(linea, lon, cursor, lon_incit);
             continue;
@@ -1186,7 +1245,7 @@ static char *lege_lineam_interactivam(void)
         if (c == 21) {
             memmove(linea, linea + cursor, lon - cursor);
             lon -= cursor;
-            cursor = 0;
+            cursor     = 0;
             linea[lon] = '\0';
             repinge_lineam(linea, lon, cursor, lon_incit);
             continue;
@@ -1195,11 +1254,13 @@ static char *lege_lineam_interactivam(void)
         /* Ctrl-W — dele verbum retro */
         if (c == 23) {
             int dest = cursor;
-            while (dest > 0 && linea[dest - 1] == ' ') dest--;
-            while (dest > 0 && linea[dest - 1] != ' ') dest--;
+            while (dest > 0 && linea[dest - 1] == ' ')
+                dest--;
+            while (dest > 0 && linea[dest - 1] != ' ')
+                dest--;
             memmove(linea + dest, linea + cursor, lon - cursor);
             lon -= cursor - dest;
-            cursor = dest;
+            cursor     = dest;
             linea[lon] = '\0';
             repinge_lineam(linea, lon, cursor, lon_incit);
             continue;
@@ -1215,9 +1276,11 @@ static char *lege_lineam_interactivam(void)
         /* sequentia effugitionis (cursores, etc.) */
         if (c == 27) {
             unsigned char seq[3];
-            if (read(STDIN_FILENO, &seq[0], 1) <= 0) continue;
+            if (read(STDIN_FILENO, &seq[0], 1) <= 0)
+                continue;
             if (seq[0] == '[') {
-                if (read(STDIN_FILENO, &seq[1], 1) <= 0) continue;
+                if (read(STDIN_FILENO, &seq[1], 1) <= 0)
+                    continue;
 
                 switch (seq[1]) {
                 case 'A': /* sursum — historia */
@@ -1241,7 +1304,7 @@ static char *lege_lineam_interactivam(void)
                             strncpy(linea, historia[idx_hist], LIM_LINEA - 1);
                             linea[LIM_LINEA - 1] = '\0';
                         }
-                        lon = (int)strlen(linea);
+                        lon    = (int)strlen(linea);
                         cursor = lon;
                         repinge_lineam(linea, lon, cursor, lon_incit);
                     }
@@ -1269,8 +1332,10 @@ static char *lege_lineam_interactivam(void)
                 case '3': /* Delete */
                     read(STDIN_FILENO, &seq[2], 1); /* ~ */
                     if (cursor < lon) {
-                        memmove(linea + cursor, linea + cursor + 1,
-                                lon - cursor - 1);
+                        memmove(
+                            linea + cursor, linea + cursor + 1,
+                            lon - cursor - 1
+                        );
                         lon--;
                         linea[lon] = '\0';
                         repinge_lineam(linea, lon, cursor, lon_incit);
@@ -1331,15 +1396,15 @@ int main(int argc, char **argv)
     memset(&sa, 0, sizeof(sa));
 
     sa.sa_handler = tracta_sigint;
-    sa.sa_flags = SA_RESTART;
+    sa.sa_flags   = SA_RESTART;
     sigaction(SIGINT, &sa, NULL);
 
     sa.sa_handler = tracta_sigchld;
-    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+    sa.sa_flags   = SA_RESTART | SA_NOCLDSTOP;
     sigaction(SIGCHLD, &sa, NULL);
 
     /* determina flumen fontis */
-    FILE *flumen = stdin;
+    FILE *flumen     = stdin;
     int interactivum = isatty(STDIN_FILENO);
 
     if (argc > 1) {
@@ -1362,7 +1427,8 @@ int main(int argc, char **argv)
         else
             linea = lege_lineam_simplicem(flumen);
 
-        if (!linea) break;
+        if (!linea)
+            break;
 
         /* praetermitte lineas vacuas */
         if (linea[0] == '\0' || linea[0] == '#')
