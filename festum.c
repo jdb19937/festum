@@ -460,7 +460,13 @@ static int exsequere_internum(mandatum_t *m)
         int codex = 0;
         if (m->num_argumenta > 1)
             codex = atoi(m->argumenta[1]);
-        libera_lineam(&(linea_dissecta_t){.mandata = {*m}, .num_mandata = 1});
+        {
+            linea_dissecta_t temp;
+            temp.mandata[0]  = *m;
+            temp.num_mandata = 1;
+            temp.in_fundo    = 0;
+            libera_lineam(&temp);
+        }
         exit(codex);
     }
 
