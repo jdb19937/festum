@@ -1100,7 +1100,7 @@ static char *lege_lineam_interactivam(void)
 
         /* Ctrl-C — purga lineam */
         if (c == 3) {
-            term_scribe_s("^C\n");
+            term_scribe_s("^C\r\n");
             restitue_terminum();
             scribe_incitamentum();
             lon      = 0;
@@ -1113,7 +1113,7 @@ static char *lege_lineam_interactivam(void)
 
         /* Enter */
         if (c == '\r' || c == '\n') {
-            term_scribe_s("\n");
+            term_scribe_s("\r\n");
             restitue_terminum();
             linea[lon] = '\0';
             return linea;
@@ -1204,12 +1204,12 @@ static char *lege_lineam_interactivam(void)
                     repinge_lineam(linea, lon, cursor, lon_incit);
                 } else {
                     /* ostende omnes completiones */
-                    term_scribe_s("\n");
+                    term_scribe_s("\r\n");
                     for (int i = 0; i < num_compl; i++) {
                         term_scribe_s(completiones[i]);
                         term_scribe_s("  ");
                     }
-                    term_scribe_s("\n");
+                    term_scribe_s("\r\n");
                     repinge_lineam(linea, lon, cursor, lon_incit);
                 }
             }
