@@ -8,7 +8,7 @@ festum: festum.o
 	ldi $^
 
 %.o: %.c
-	ccc %<
+	ccc $<
 
 colloca: omnia
 	install -d $(PREFIX)/bin
