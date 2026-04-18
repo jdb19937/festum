@@ -1,26 +1,21 @@
 # Faceplica — aedificatio festum
-#
-# Usus:
-#   face            — aedifica festum
-#   face purga      — dele omnia aedificata
-#   face colloca    — colloca in /opt/apotheca/bin
 
-CC      ?= cc
-CFLAGS  ?= -Wall -Wextra -pedantic -std=c99 -O2
+PREFIX = /opt/apotheca
 
 omnia: festum
 
-festum: festum.c
-	$(CC) $(CFLAGS) -o $@ $<
+festum: festum.o
+	ldi $^
 
-PREFIX = /opt/apotheca
+%.o: %.c
+	ccc %<
 
 colloca: omnia
 	install -d $(PREFIX)/bin
 	install -m 755 festum $(PREFIX)/bin/
 
 purga:
-	rm -f festum
+	rm -f festum festum.o
 
 linte:
 	insinulint -c festum.c
